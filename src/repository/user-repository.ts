@@ -2,21 +2,16 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import * as firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/database';
-import { LoginDto } from '../DTO/user/login.dto';
-import { UserCreateDto } from '../DTO/user/user-create.dto';
-import { UserDto } from '../DTO/user/user.dto';
-import { EnvironmentService } from '../service/environment/environment.service';
-import { User } from 'firebase';
+import { LoginDto } from '../model/DTO/user/login.dto';
+import { UserCreateDto } from '../model/DTO/user/user-create.dto';
+import { UserDto } from '../model/DTO/user/user.dto';
+import { UserPatchDto } from '../model/DTO/user/user-patch.dto';
 import UserCredential = firebase.auth.UserCredential;
 import DataSnapshot = firebase.database.DataSnapshot;
 
 
 @Injectable()
 export class UserRepository {
-
-
-  constructor(private environmentService: EnvironmentService) {
-  }
 
   public async login(loginDTO: LoginDto): Promise<UserCreateDto> {
     try {
@@ -61,13 +56,26 @@ export class UserRepository {
     return firebase.database().ref('users/' + uuid).once('value');
   }
 
-  updateUserById(uuid: string, userCreateDto: UserCreateDto): Promise<UserDto> {
-    return firebase.database().ref('users/' + uuid).update(userCreateDto);
-  }
-
-  updateUserPasswordById(uuid: string, newPassword: string): Promise<void> {
-    const currentUser: User = firebase.auth().currentUser;
-    return currentUser.updatePassword(newPassword);
+  async updateUserById(uuid: string, userPatchDto: UserPatchDto): Promise<UserDto> {
+    await firebase.auth().signOut();
+    const snapshot: DataSnapshot = await this.getUserById(uuid);
+    try {
+      const user = snapshot.val();
+      const userCredential: UserCredential = await firebase.auth().signInWithEmailAndPassword(user.email, user.password);
+      await userCredential.user.updateEmail(userPatchDto.email);
+      await userCredential.user.updatePassword(userPatchDto.newPassword);
+      const { newPassword, ...userCreateDto } = userPatchDto;
+      userCreateDto.password = newPassword;
+      await snapshot.ref.update(userCreateDto);
+    } catch (e) {
+      throw new HttpException({
+        error: e.message,
+      }, HttpStatus.FORBIDDEN);
+    }
+    return this.getUserById(uuid).then((snapshot: DataSnapshot) => {
+      const { password, ...userDto } = snapshot.val();
+      return userDto as UserDto;
+    });
   }
 
 }

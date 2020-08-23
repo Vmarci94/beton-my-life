@@ -1,7 +1,8 @@
-import { Body, Controller, DefaultValuePipe, Get, Param, ParseBoolPipe, Patch, Query } from '@nestjs/common';
+import { Body, Controller, DefaultValuePipe, Get, Param, ParseBoolPipe, Patch, Query, UseGuards } from '@nestjs/common';
 import { UserService } from '../../service/user/user.service';
-import { UserDto } from '../../DTO/user/user.dto';
-import { UserPatchDto } from '../../DTO/user/user-patch.dto';
+import { UserDto } from '../../model/DTO/user/user.dto';
+import { UserPatchDto } from '../../model/DTO/user/user-patch.dto';
+import { JwtAuthGuard } from '../../jwt/jwt-auth.guard';
 
 @Controller('users')
 export class UserController {
@@ -9,6 +10,7 @@ export class UserController {
   constructor(private userService: UserService) {
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('')
   public getAllUser(@Query('showDeleted', new DefaultValuePipe(false), ParseBoolPipe)
                       showDeleted: boolean): Promise<UserDto[]> {

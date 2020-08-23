@@ -1,9 +1,9 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { UserRepository } from '../../repository/user-repository';
-import { UserCreateDto } from '../../DTO/user/user-create.dto';
-import { LoginDto } from '../../DTO/user/login.dto';
-import { UserDto } from '../../DTO/user/user.dto';
-import { UserPatchDto } from '../../DTO/user/user-patch.dto';
+import { UserCreateDto } from '../../model/DTO/user/user-create.dto';
+import { LoginDto } from '../../model/DTO/user/login.dto';
+import { UserDto } from '../../model/DTO/user/user.dto';
+import { UserPatchDto } from '../../model/DTO/user/user-patch.dto';
 import DataSnapshot = firebase.database.DataSnapshot;
 
 @Injectable()
@@ -34,23 +34,6 @@ export class UserService {
   }
 
   async updateUserById(uuid: string, userPatchDto: UserPatchDto): Promise<UserDto> {
-    const user: UserCreateDto = (await this.userRepository.getUserById(uuid)).val();
-    if (user.password === userPatchDto.password) {
-      try {
-        await this.userRepository.updateUserPasswordById(uuid, userPatchDto.newPassword);
-        // @ts-ignore
-        return this.userRepository.updateUserById(uuid, userPatchDto);
-      } catch (e) {
-        throw new HttpException({
-          status: HttpStatus.FORBIDDEN,
-          error: 'error',
-        }, 403);
-      }
-    } else {
-      throw new HttpException({
-        status: HttpStatus.FORBIDDEN,
-        error: 'wrong password!',
-      }, 403);
-    }
+    return this.userRepository.updateUserById(uuid, userPatchDto);
   }
 }
