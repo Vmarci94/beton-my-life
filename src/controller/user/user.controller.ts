@@ -1,7 +1,7 @@
 import {
   Body,
   Controller,
-  DefaultValuePipe,
+  DefaultValuePipe, Delete,
   Get,
   Param,
   ParseBoolPipe,
@@ -38,6 +38,11 @@ export class UserController {
   @Patch(':uuid')
   public updateUserById(@Param('uuid') uuid: string, @Body() userPatchDto: UserPatchDto): Promise<UserDto> {
     return this.userService.updateUserById(uuid, userPatchDto);
+  }
+
+  @Delete(':uuid')
+  public deleteUserById(@Param('uuid') uuid: string): Promise<UserDto> {
+    return this.userService.deleteUserById(uuid);
   }
 
 

@@ -83,4 +83,20 @@ export class UserRepository {
     });
   }
 
+  async deleteUserById(uuid: string): Promise<UserDto> {
+    await firebase.auth().signOut();
+    const snapshot: DataSnapshot = await this.getUserById(uuid);
+    try {
+      const user = snapshot.val();
+      const userCredential: UserCredential = await firebase.auth().signInWithEmailAndPassword(user.email, user.password);
+      await userCredential.user.delete();
+      await firebase.database().ref('users/' + uuid).remove();
+      return user as UserDto;
+    } catch (e) {
+      throw new HttpException({
+        error: e.message,
+      }, HttpStatus.FORBIDDEN);
+    }
+  }
+
 }

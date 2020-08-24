@@ -26,4 +26,8 @@ export class UserService {
     return this.userRepository.updateUserById(uuid, userPatchDto);
   }
 
+  deleteUserById(uuid: string): Promise<UserDto> {
+    return this.userRepository.deleteUserById(uuid);
+  }
+
 }
