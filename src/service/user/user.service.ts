@@ -14,18 +14,6 @@ export class UserService {
   constructor(private readonly userRepository: UserRepository, private readonly jwtService: JwtService) {
   }
 
-  public login(loginDTO: LoginDto, response: Response): Promise<UserDto> {
-    return this.userRepository.login(loginDTO).then((userDto: UserDto) => {
-      response.set("Authorization", `Bearer ${this.jwtService.sign({username: userDto.email, sub: userDto.id})}`);
-      return userDto;
-    })
-  }
-
-  public register(userDto: UserCreateDto): Promise<UserDto> {
-    return this.userRepository.register(userDto);
-  }
-
-
   getAllUser(showDeleted: boolean): Promise<UserDto[]> {
     return this.userRepository.getAllUser(showDeleted);
   }

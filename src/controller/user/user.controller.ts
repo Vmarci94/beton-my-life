@@ -1,29 +1,45 @@
-import { Body, Controller, DefaultValuePipe, Get, Param, ParseBoolPipe, Patch, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  DefaultValuePipe,
+  Get,
+  Param,
+  ParseBoolPipe,
+  Patch,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { UserService } from '../../service/user/user.service';
 import { UserDto } from '../../model/DTO/user/user.dto';
 import { UserPatchDto } from '../../model/DTO/user/user-patch.dto';
 import { JwtAuthGuard } from '../../jwt/jwt-auth.guard';
+import { JwtService } from '@nestjs/jwt';
+import { Request } from 'express';
 
+@UseGuards(JwtAuthGuard)
 @Controller('users')
 export class UserController {
 
-  constructor(private userService: UserService) {
+  constructor(
+    private readonly userService: UserService,
+    // private readonly jwtService: JwtService,
+  ) {
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('')
-  public getAllUser(@Query('showDeleted', new DefaultValuePipe(false), ParseBoolPipe)
-                      showDeleted: boolean): Promise<UserDto[]> {
+  public getAllUser(
+    @Query('showDeleted', new DefaultValuePipe(false), ParseBoolPipe) showDeleted: boolean,
+    // @Req() request: Request,
+  ): Promise<UserDto[]> {
     return this.userService.getAllUser(showDeleted);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get(':uuid')
   public getUserById(@Param('uuid') uuid: string): Promise<UserDto> {
     return this.userService.getUserById(uuid);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Patch(':uuid')
   public updateUserById(@Param('uuid') uuid: string, @Body() userPatchDto: UserPatchDto): Promise<UserDto> {
     return this.userService.updateUserById(uuid, userPatchDto);

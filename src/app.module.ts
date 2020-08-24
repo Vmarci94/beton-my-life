@@ -10,6 +10,7 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { firebaseConfig, jwtConstants } from './utils/constants';
 import { JwtStrategy } from './jwt/jwt-strategy';
+import { AuthService } from './service/auth/auth.service';
 
 
 @Module({
@@ -18,11 +19,11 @@ import { JwtStrategy } from './jwt/jwt-strategy';
     PassportModule,
     JwtModule.register({
         secret: jwtConstants.secret,
-        signOptions: { expiresIn: '60s' },
+        signOptions: { expiresIn: '300s' }, //300s = 5min
       },
     )],
   controllers: [AppController, UserController, AuthController],
-  providers: [AppService, UserService, UserRepository, JwtStrategy],
+  providers: [AppService, UserService, UserRepository, JwtStrategy, AuthService],
 })
 export class AppModule {
 
