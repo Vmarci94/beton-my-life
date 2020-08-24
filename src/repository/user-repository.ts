@@ -9,7 +9,6 @@ import { UserPatchDto } from '../model/DTO/user/user-patch.dto';
 import UserCredential = firebase.auth.UserCredential;
 import DataSnapshot = firebase.database.DataSnapshot;
 
-
 @Injectable()
 export class UserRepository {
 
@@ -19,7 +18,7 @@ export class UserRepository {
       return this.getUserById(userCredential.user.uid).then((snapshot: DataSnapshot) => {
         if (snapshot.exists()) {
           const userDto: UserDto = snapshot.val();
-          if(!userDto.isDeleted){
+          if (!userDto.isDeleted) {
             return userDto;
           }
         }
