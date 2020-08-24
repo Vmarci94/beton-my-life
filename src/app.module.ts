@@ -11,6 +11,9 @@ import { JwtModule } from '@nestjs/jwt';
 import { firebaseConfig, jwtConstants } from './utils/constants';
 import { JwtStrategy } from './jwt/jwt-strategy';
 import { AuthService } from './service/auth/auth.service';
+import { ChallengeController } from './controller/challenge/challengeController';
+import { ChallengeService } from './service/challenge/challenge.service';
+import { ChallengeRepository } from './repository/challenge-repository';
 
 
 @Module({
@@ -22,8 +25,8 @@ import { AuthService } from './service/auth/auth.service';
         signOptions: { expiresIn: '300s' }, //300s = 5min
       },
     )],
-  controllers: [AppController, UserController, AuthController],
-  providers: [AppService, UserService, UserRepository, JwtStrategy, AuthService],
+  controllers: [AppController, UserController, AuthController, ChallengeController],
+  providers: [AppService, UserService, UserRepository, JwtStrategy, AuthService, ChallengeService, ChallengeRepository],
 })
 export class AppModule {
 
