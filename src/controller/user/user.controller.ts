@@ -17,11 +17,13 @@ export class UserController {
     return this.userService.getAllUser(showDeleted);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get(':uuid')
   public getUserById(@Param('uuid') uuid: string): Promise<UserDto> {
     return this.userService.getUserById(uuid);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Patch(':uuid')
   public updateUserById(@Param('uuid') uuid: string, @Body() userPatchDto: UserPatchDto): Promise<UserDto> {
     return this.userService.updateUserById(uuid, userPatchDto);

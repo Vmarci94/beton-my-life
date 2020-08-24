@@ -13,19 +13,25 @@ import DataSnapshot = firebase.database.DataSnapshot;
 @Injectable()
 export class UserRepository {
 
-  public async login(loginDTO: LoginDto): Promise<UserCreateDto> {
+  public async login(loginDTO: LoginDto): Promise<UserDto> {
     try {
       const userCredential: UserCredential = await firebase.auth().signInWithEmailAndPassword(loginDTO.email, loginDTO.password);
-      const dataSnapshot: Promise<DataSnapshot> = firebase.database().ref('users/' + userCredential.user.uid).once('value');
-      return dataSnapshot.then((snapshot: DataSnapshot) => {
-        return snapshot.val();
+      return this.getUserById(userCredential.user.uid).then((snapshot: DataSnapshot) => {
+        if (snapshot.exists()) {
+          const userDto: UserDto = snapshot.val();
+          if(!userDto.isDeleted){
+            return userDto;
+          }
+        }
+        throw new HttpException({
+          error: 'User does not exist or has been deleted.',
+        }, HttpStatus.FORBIDDEN);
       });
     } catch (e) {
       console.error(e);
       throw new HttpException({
-        status: HttpStatus.FORBIDDEN,
         error: e.message ? e.message : 'error',
-      }, 403);
+      }, HttpStatus.FORBIDDEN);
     }
   }
 

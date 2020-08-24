@@ -25,4 +25,5 @@ export class UserDto {
 
   @ApiProperty()
   pictureUrl: string;
+
 }

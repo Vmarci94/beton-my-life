@@ -9,7 +9,7 @@ import * as firebase from 'firebase/app';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { firebaseConfig, jwtConstants } from './utils/constants';
-import { AuthService } from './service/auth/auth.service';
+import { JwtStrategy } from './jwt/jwt-strategy';
 
 
 @Module({
@@ -18,15 +18,15 @@ import { AuthService } from './service/auth/auth.service';
     PassportModule,
     JwtModule.register({
         secret: jwtConstants.secret,
-        signOptions: { expiresIn: '60s' }
+        signOptions: { expiresIn: '60s' },
       },
     )],
   controllers: [AppController, UserController, AuthController],
-  providers: [AppService, UserService, UserRepository, EnvironmentService, AuthService],
+  providers: [AppService, UserService, UserRepository, JwtStrategy],
 })
 export class AppModule {
 
-  constructor(private environmentService: EnvironmentService) {
+  constructor() {
     firebase.initializeApp(firebaseConfig);
   }
 
