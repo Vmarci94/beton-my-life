@@ -4,12 +4,11 @@ LABEL author=varga_marton@4dsoft.hu
 
 WORKDIR /workspace
 
-#RUN npm i -g @nestjs/cli
-
-COPY ./dist ./dist
 COPY ./package.json ./package.json
+COPY ./src ./src
+COPY *.json ./
 
-RUN npm install
+RUN npm i -g @nestjs/cli && npm install && nest build
 
 EXPOSE 3000
 

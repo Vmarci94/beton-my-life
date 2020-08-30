@@ -12,4 +12,16 @@ export class ChallengeService {
   getAllChallanges(): Promise<ChallangeDto[]> {
     return this.challengeRepository.getAllChallanges();
   }
+
+  create(challangeDto: ChallangeDto) {
+    return Promise.resolve(undefined);
+  }
+
+  delete(uuid: string) {
+    return Promise.resolve(undefined);
+  }
+
+  update(uuid: string, userPatchDto: any) {
+    return Promise.resolve(undefined);
+  }
 }
